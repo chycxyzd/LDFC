@@ -4,6 +4,7 @@ import os
 import imageio
 import pandas as pd
 import csv
+import argparse
 
 
 
@@ -26,9 +27,6 @@ def augment(sample, bboxes, do_flip = False, do_rotate=False, do_swap = True):
                 # b = box[3:6:2]
                 # box[3:5] = np.dot(rotmat, box[3:5] - size / 2) + size / 2
                 # box[2:6:3] = np.dot(rotmat, box[2:6:3] - size / 2) + size / 2
-                """换个思路，把坐标中心点记录下来，计算旋转后的坐标中心点，由于
-                直径是不变的，计算出旋转后的坐标中心点后，再将直径/2分别加减
-                在中心点，以生成min和max"""
                 diameter1 = box[3] - box[2]
                 center_y = size[1] - ((box[3] - box[2]) // 2 + box[2])  # (ymax-ymin // 2) + ymin
                 center_x = (box[5] - box[4]) // 2 + box[4]
@@ -51,18 +49,10 @@ def augment(sample, bboxes, do_flip = False, do_rotate=False, do_swap = True):
                 box[3] = ymax
                 box[4] = zmin
                 box[5] = zmax
-
-
-
-
     if do_flip:
-        # flipid = np.array([np.random.randint(2),np.random.randint(2),np.random.randint(2)])*2-1
-        flipid = np.array([1, 0, 0]) * 2 - 1  # [1,0,0]水平垂直翻转，[1,0,1]水平翻转，[1,1,0]垂直翻转
+        # [1,0,0]Horizontal Vertical Flip，[1,0,1]Horizontal Flip，[1,1,0]Vertical Flip
+        flipid = np.array([1, 0, 0]) * 2 - 1
         sample = np.ascontiguousarray(sample[:, ::flipid[0], ::flipid[1], ::flipid[2]])
-        # for ax in range(3):
-        #     if flipid[ax]==-1:
-        #         target[ax] = np.array(sample.shape[ax+1])-target[ax]
-        #         bboxes[:,ax]= np.array(sample.shape[ax+1])-bboxes[:,ax]
         for i in range(3):
             if flipid[i] == -1:
                 tem = [0, 2, 4]
@@ -71,18 +61,18 @@ def augment(sample, bboxes, do_flip = False, do_rotate=False, do_swap = True):
                 bboxes[0, :, ax] = np.array(sample.shape[i + 1]) - bboxes[0, :, ax]
                 # target[ax + 1] = np.array(sample.shape[i + 1]) - target[ax + 1]
                 bboxes[0, :, ax + 1] = np.array(sample.shape[i + 1]) - bboxes[0, :, ax + 1]   # x和y的坐标转换后，min和max互换
-                if ax == 2:  # y在变，即上下翻转
+                if ax == 2:  # The y is changing.
                     bboxes[0, :, [0, 1, 2, 3, 4, 5]] = bboxes[0, :, [0, 1, 3, 2, 4, 5]]
-                elif ax == 4:  # x在变，即左右翻转
+                elif ax == 4:  # The x is changing.
                     bboxes[0, :, [0, 1, 2, 3, 4, 5]] = bboxes[0, :, [0, 1, 2, 3, 5, 4]]
         bboxes[0, :, [0, 1, 2, 3, 4, 5]] = bboxes[0, :, [4, 5, 2, 3, 0, 1]]
 
     return sample, bboxes
 
-if __name__ == '__main__':
-    # 读取BMP文件
-    data_path = '/home/Chen_hongyu/lung_nodule_dataset/BMP_ALL/imgs'
-    output_path = '/home/Chen_hongyu/lung_nodule_dataset/BMP_expand/augment_img_rotate'
+def main(args):
+    # read BMP
+    data_path = args.data_path
+    output_path = args.output_path
     a = os.listdir(data_path)
     for filename in os.listdir(data_path):
         # if filename == '55':
@@ -94,8 +84,8 @@ if __name__ == '__main__':
         imgs = np.array(slices)
         imgs = imgs[np.newaxis, ...]
 
-        # 读取csv
-        csv_dir = '/home/Chen_hongyu/lung_nodule_dataset/BMP_expand/all_anno_3D.csv'
+        # read csv
+        csv_dir = args.csv_dir
         annos_all = pd.read_csv(csv_dir)
         annos = annos_all[annos_all['index'] == int(filename)]
         temp_annos = []
@@ -105,7 +95,7 @@ if __name__ == '__main__':
         index_name = annos['index']
         image_name = np.array(image_name)
         for i in range(image_name.shape[0]):
-            image_name[i] = 'rot_' + image_name[i]  # 改名字！！！！
+            image_name[i] = 'rot_' + image_name[i]
         index_name = np.array(index_name)
         image_name = image_name.reshape(-1, 1)
         index_name = index_name.reshape(-1, 1)
@@ -121,7 +111,6 @@ if __name__ == '__main__':
         labels.append(l)
         labels = np.array(labels)
 
-        # 创建target(执行扩充函数)
         print('start--{}'.format(filename))
         sample, bboxes = augment(sample=imgs, bboxes=labels, do_flip=False, do_rotate=True)
         # a = sample[0,0,:,:]
@@ -129,13 +118,13 @@ if __name__ == '__main__':
         for i in lines:
             if not os.path.exists(os.path.join(output_path, filename)):
                 os.mkdir(os.path.join(output_path, filename))
-            imageio.imsave(os.path.join(output_path, filename, i), sample[0,idx,:,:])
+            imageio.imsave(os.path.join(output_path, filename, i), sample[0, idx, :, :])
             idx = idx + 1
 
-        # 计算center坐标
+        # calculate coordinates
         center_list = []
         for i in range(bboxes.shape[1]):
-            a = bboxes[0,i]
+            a = bboxes[0, i]
             center = []
             x_center = (bboxes[0, i, 0] + bboxes[0, i, 1]) // 2
             y_center = (bboxes[0, i, 2] + bboxes[0, i, 3]) // 2
@@ -152,13 +141,32 @@ if __name__ == '__main__':
         bboxes_new = np.concatenate((image_name, bboxes_new), axis=1)
         bboxes_new = np.concatenate((index_name, bboxes_new), axis=1)
 
-
-
-        # 保存csv
+        # save csv
         for j in range(bboxes_new.shape[0]):
-            with open('/home/Chen_hongyu/lung_nodule_dataset/BMP_expand/augment_rotate.csv',
-                    'a', newline='') as csvfile:
+            with open(args.csv_save,
+                      'a', newline='') as csvfile:
                 writer = csv.writer(csvfile)
                 writer.writerow(bboxes_new[j])
         # pd.DataFrame(bboxes_new).to_csv(os.path.join(output_path, filename, 'augment.csv'))
         print('over--{}'.format(filename))
+
+if __name__ == '__main__':
+    "data-path is the data storage path" \
+    "output-path is the output path of the processed data" \
+    "csv-dir is the path to the csv file" \
+    "csv-save is the save path of the csv file"
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--data-path', type=str,
+                        default='/home/Chen_hongyu/lung_nodule_dataset/BMP_ALL/imgs')
+    parser.add_argument('--output-path', type=str,
+                        default='/home/Chen_hongyu/lung_nodule_dataset/BMP_expand/augment_img_rotate')
+    parser.add_argument('--csv-dir', type=str,
+                        default='/home/Chen_hongyu/lung_nodule_dataset/BMP_expand/all_anno_3D.csv')
+    parser.add_argument('--csv-save', type=str,
+                        default='/home/Chen_hongyu/lung_nodule_dataset/BMP_expand/augment_rotate.csv')
+
+    opt = parser.parse_args()
+
+    main(opt)
