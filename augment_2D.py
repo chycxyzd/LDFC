@@ -22,8 +22,7 @@ def augment(sample, do_flip = False, do_rotate=False, do_swap = True, angle=0):
             # target = newtarget
             sample = rotate(sample, angle1, axes=(0, 1), reshape=False)
     if do_flip:
-        # flipid = np.array([np.random.randint(2),np.random.randint(2),np.random.randint(2)])*2-1
-        flipid = np.array([1, 0]) * 2 - 1  # [0,0]水平垂直翻转，[1, 0]水平翻转，[0, 1]垂直翻转
+        flipid = np.array([1, 0]) * 2 - 1  # [1,0,0]Horizontal Vertical Flip，[1,0,1]Horizontal Flip，[1,1,0]Vertical Flip
         sample = np.ascontiguousarray(sample[::flipid[0], ::flipid[1]])
         # for ax in range(3):
         #     if flipid[ax]==-1:
