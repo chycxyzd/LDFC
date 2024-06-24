@@ -42,3 +42,9 @@ This repository contains Python code that may be used when using datasets
 - draw_bbox.py         # drawing bbox
 - read_mhd.py          # Read mhd data
 ```
+## Environment Configuration
+* Python 3.8
+* Pytorch >= 1.10.0
+* pycocotools(Linux: `pip install pycocotools`;   
+  Windows: `pip install pycocotools-windows`
+* For more information on environment configuration, see the `requirements.txt` file
