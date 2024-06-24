@@ -63,4 +63,7 @@ This repository contains Python code that may be used when using datasets
   ```
   - DICOM.rar
   ```
+* The specific dataset file structure can be seen in the following figure
+  ![image](https://github.com/chycxyzd/LDFC/assets/128997252/e77b837b-03fe-460f-a7e9-1e0be2368774)
 * You can download the corresponding version according to your experimental needs.
+## Data preparation
