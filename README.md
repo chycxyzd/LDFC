@@ -48,3 +48,19 @@ This repository contains Python code that may be used when using datasets
 * pycocotools(Linux: `pip install pycocotools`;   
   Windows: `pip install pycocotools-windows`
 * For more information on environment configuration, see the `requirements.txt` file
+## Data preparation
+* You can download datasets from `https://zenodo.org/records/8422229` (v1) and `https://zenodo.org/records/11024613` (v2).
+* Version 1 contains data in both BMP and MHD formats, as well as the corresponding CSV annotation files.
+  ```
+  - all_anno_3D.csv
+  - anno_WorldCoord.csv
+  - BMP_2D.zip
+  - BMP_3D.zip
+  - BMP_classification.zip
+  - MHD_3D.zip
+  ```
+* Version 2 contains the original DICOM file.
+  ```
+  - DICOM.rar
+  ```
+* You can download the corresponding version according to your experimental needs.
