@@ -77,7 +77,8 @@ This repository contains Python code that may be used when using datasets
 * If you want to replace the model for the classification/detection task, change the following code in the corresponding `train.py` file:
   ```
   1) Identify the model that needs to be replaced, using ConvNext as an example:
-     `from ConvNext import convnext_base`
-  2) ```model_name = "ConvNext"
-        model = convnext_base(num_classes=3)
-        model.to(device)```
+     from ConvNext import convnext_base
+  2) model_name = "ConvNext"
+     model = convnext_base(num_classes=3)
+     model.to(device)
+  ```
