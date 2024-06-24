@@ -74,3 +74,10 @@ This repository contains Python code that may be used when using datasets
   `python train.py --epoch 50 --batch-size 16 --weights your_weights_file_path`
 * If you want to perform the detection task, you can use `detection/train.py`, e.g.:
   `python train.py --epoch 50 --batch-size 16 --weights your_weights_file_path`
+* If you want to replace the model for the classification/detection task, change the following code in the corresponding `train.py` file:
+  ```
+  1) Identify the model that needs to be replaced, using ConvNext as an example:
+     `from ConvNext import convnext_base`
+  2) ```model_name = "ConvNext"
+        model = convnext_base(num_classes=3)
+        model.to(device)```
