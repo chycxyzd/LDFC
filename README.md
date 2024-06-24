@@ -66,4 +66,6 @@ This repository contains Python code that may be used when using datasets
 * The specific dataset file structure can be seen in the following figure
   ![image](https://github.com/chycxyzd/LDFC/assets/128997252/e77b837b-03fe-460f-a7e9-1e0be2368774)
 * You can download the corresponding version according to your experimental needs.
-## Data preparation
+## Usage
+* You can preprocess 3D/2D data using `augment.py` or `augment_2D.py`, e.g.: `python augment.py --data-path your_data_path --output-path your_save_path`.
+* If you want to perform classification tasks, you can use `classification/train.py`, e.g. `python train.py --epoch 50 --batch-size 16 --weights your_weights_file_path`
