@@ -91,5 +91,4 @@ This repository contains Python code that may be used when using datasets
       year={2024},
       journal={Scientific Data},
       doi={https://doi.org/10.1038/s41597-024-03658-6}
-}
   ```
