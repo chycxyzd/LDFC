@@ -82,3 +82,14 @@ This repository contains Python code that may be used when using datasets
      model = convnext_base(num_classes=3)
      model.to(device)
   ```
+
+  ## Citation
+  ```
+  @misc{chen2024lung,
+      title={A Lung Nodule Dataset with Histopathology-based Cancer Type Annotation}, 
+      author={Muwei Jian, Hongyu Chen, et al.},
+      year={2024},
+      journal={Scientific Data},
+      doi={https://doi.org/10.1038/s41597-024-03658-6}
+}
+  ```
